@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <h:head>
+        <title>Blogs Readers</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="/template/template.xhtml">
+            <ui:define name="content">
+                <!-- BLOGS READERS FORM -->
+                <h:form id="blogsReadersForm">  
+                    <p:growl id="growl" showDetail="true" sticky="true" life="3000"/>
+                    <p:dataTable id="blogReadersDataTable" value="#{blogsReadersController.blogsReaders}" var="d" 
+                                 selection="#{blogsReadersController.blogReaderSeleccionado}" rowKey="#{d.blog.id}" selectionMode="single"
+                                 paginator="true" rows="10" paginatorPosition="bottom">
+                        <p:column headerText="Readers Name"
+                                  filterBy="#{d.reader.name}">
+                            #{d.reader.name}
+                        </p:column>
+                        <p:column headerText="Blogs Title"
+                                  filterBy="#{d.blog.title}">
+                            #{d.blog.title}
+                        </p:column>
+                        <f:facet name="header">
+                            <p:commandButton value="Agregar Blogs Readers" 
+                                             update=":dialogReaderForm" oncomplete="PF('blogReaderDialog').show()" />
+                        </f:facet>
+                    </p:dataTable>
+                    <!-- CONTEXT MENU BLOGS READERS -->
+                    <p:contextMenu for="blogReadersDataTable">
+                        <p:menuitem value="Eliminar" icon="pi pi-times" update="blogReadersDataTable,growlForm" actionListener="#{blogsReadersController.eliminarBlogReader}"/>
+                        <p:menuitem value="Editar" icon="pi pi-pencil" update="blogReaderUpdateDlg" oncomplete="PF('blogReaderUpdateDialog').show()" actionListener="#{blogsReadersController.datosEditBlogsReaders}"/>
+                    </p:contextMenu>
+                </h:form>
+
+                <!-- BLOGS READERS DIALOG -->
+                <p:dialog id="blogReaderDlg" widgetVar="blogReaderDialog" header="Agregar Blog Reader" modal="true" showEffect="fade" hideEffect="fade" 
+                          resizable="false" >
+                    <h:form id="dialogReaderForm">
+                        <h:panelGrid id="display" columns="4" cellpadding="5">
+                            <p:outputLabel for="readersGroup" value="Reader" />
+                            <p:selectOneMenu id="readersGroup" required="true" requiredMessage="El reader es requerido">
+                                <f:selectItem itemLabel="Selecciona un Reader" itemValue=""/>
+                                <f:selectItems value="#{blogsReadersController.readersList}" var="reader" itemLabel="#{reader.name}" itemValue="#{reader.id}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel for="blogsGroup" value="Blog" />
+                            <p:selectOneMenu id="blogsGroup" required="true" requiredMessage="El blog es requerido">
+                                <f:selectItem itemLabel="Selecciona un Blog" itemValue=""/>
+                                <f:selectItems value="#{blogsReadersController.blogsList}" var="blog" itemLabel="#{blog.title}" itemValue="#{blog.id}"/>
+                            </p:selectOneMenu>
+                            <p:commandButton value="Agregar" oncomplete="if (!args.validationFailed) PF('blogReaderDialog').hide();"
+                                             actionListener="#{blogsReadersController.agregarBlogReader}"
+                                             process="@form"
+                                             update="display, :blogsReadersForm:blogReadersDataTable,growlForm"/>
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+
+                <!-- BLOG READERS UPDATE DIALOG -->
+                <p:dialog id="blogReaderUpdateDlg" widgetVar="blogReaderUpdateDialog" header="Editar Blog Reader" modal="true" showEffect="fade" hideEffect="fade" 
+                          resizable="false">
+                    <h:form id="blogReaderFormUpdateDlg">
+                        <h:panelGrid id="display" columns="4" cellpadding="5"> 
+                            <p:outputLabel for="readersGroup" value="Reader" />
+                            <p:selectOneMenu id="readersGroup" required="true" value="#{blogsReadersController.selectedReaderUpdate}" requiredMessage="El reader es requerido">
+                                <f:selectItem itemLabel="Selecciona un Reader" itemValue=""/>
+                                <f:selectItems value="#{blogsReadersController.readersList}" var="reader" itemLabel="#{reader.name}" itemValue="#{reader.id}"/>
+                            </p:selectOneMenu>
+                            <p:outputLabel for="blogsGroup" value="Blog" />
+                            <p:selectOneMenu id="blogsGroup" value="#{blogsReadersController.selectedBlogUpdate}" required="true" requiredMessage="El blog es requerido">
+                                <f:selectItem itemLabel="Selecciona un Blog" itemValue=""/>
+                                <f:selectItems value="#{blogsReadersController.blogsList}" var="blog" itemLabel="#{blog.title}" itemValue="#{blog.id}"/>
+                            </p:selectOneMenu>
+                            <p:commandButton value="Editar" oncomplete="if (!args.validationFailed) PF('blogReaderUpdateDialog').hide();" actionListener="#{blogsReadersController.editarBlogReader}"
+                                             process="@form"
+                                             update="display,:blogsReadersForm:blogReadersDataTable,growlForm"/>
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+            </ui:define>
+        </ui:composition>
+    </h:body>
+</html>

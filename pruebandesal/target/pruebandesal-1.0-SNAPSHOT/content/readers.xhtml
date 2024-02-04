@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+    <h:head>
+        <title>Blogs</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="/template/template.xhtml">   
+            <ui:define name="content">
+                <!-- READERS FORM -->
+                <h:form id="readersForm">   
+                    <p:growl id="growl" showDetail="true" sticky="true" life="3000"/>
+                    <p:dataTable id="readersDataTable" value="#{readerController.readers}" 
+                                 var="r" selection="#{readerController.readerSeleccionado}" 
+                                 rowKey="#{r.id}" selectionMode="single"
+                                 paginator="true" rows="10" paginatorPosition="bottom">
+                        <p:column headerText="ID"
+                                  filterBy="#{r.id}"
+                                  sortBy="#{r.id}">
+                            #{r.id}
+                        </p:column>
+                        <p:column headerText="Nombre"
+                                  filterBy="#{r.name}">
+                            #{r.name}
+                        </p:column>
+                        <f:facet name="header">
+                            <p:commandButton value="Agregar Reader" 
+                                             update=":dialogForm" oncomplete="PF('readerDialog').show()" />
+                        </f:facet>
+                    </p:dataTable>
+                    <!-- CONTEXT MENU READERS -->
+                    <p:contextMenu for="readersDataTable">
+                        <p:menuitem value="Eliminar" icon="pi pi-times" update="readersDataTable,growlForm" actionListener="#{readerController.eliminarReader}"/>
+                        <p:menuitem value="Editar" icon="pi pi-pencil" update="dialogFormUpdateReader" oncomplete="PF('readerUpdateDialog').show()" actionListener="#{readerController.datosReaderUpdate}"/>
+                    </p:contextMenu>
+                </h:form>
+
+                <!-- READER DIALOG -->
+                <p:dialog id="readerDlg" widgetVar="readerDialog" header="Agregar Reader" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                    <h:form id="dialogForm">
+                        <h:panelGrid id="display" columns="3" cellpadding="5">
+                            <p:outputLabel for="name" value="Nombre" />
+                            <p:inputText id="name" value="#{readerController.reader.name}" required="true" requiredMessage="El nombre es requerido" />
+                            <p:commandButton value="Agregar" actionListener="#{readerController.agregarReader}" 
+                                             process="@form" update="display,:readersForm:readersDataTable,growlForm" 
+                                             oncomplete="if (!args.validationFailed) PF('readerDialog').hide();"/>
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+
+                <!-- READER UPDATE DIALOG -->
+                <p:dialog id="readerUpdateDlg" widgetVar="readerUpdateDialog" header="Editar Reader" modal="true" showEffect="fade" hideEffect="fade" 
+                          resizable="false" >
+                    <h:form id="dialogFormUpdateReader">
+                        <h:panelGrid id="display" columns="3" cellpadding="5">
+                            <p:outputLabel for="nameUpd" value="Nombre" />
+                            <p:inputText id="nameUpd" value="#{readerController.readerEdit.name}" required="true" requiredMessage="El nombre es requerido"/>
+                            <f:facet name="footer" >
+                                <p:commandButton value="Editar" actionListener="#{readerController.editarReader}"
+                                                 process="@form" oncomplete="if (!args.validationFailed) PF('readerUpdateDialog').hide();"
+                                                 update="display,:readersForm:readersDataTable,growlForm"/>
+                            </f:facet>
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+            </ui:define>          
+        </ui:composition>
+    </h:body>
+</html>
+
+
+

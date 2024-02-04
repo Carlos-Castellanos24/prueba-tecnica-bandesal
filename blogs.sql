@@ -1,0 +1,33 @@
+DROP DATABASE IF EXISTS blogs;
+
+CREATE DATABASE blogs;
+
+USE blogs;
+
+CREATE TABLE readers (
+    id INT,
+    name VARCHAR(10),
+	PRIMARY KEY READERS_PK (id)
+);
+
+CREATE TABLE blogs (
+    id INT,
+    title VARCHAR(50),
+    description VARCHAR(4000),
+	PRIMARY KEY BLOGS_PK(id)
+);
+
+CREATE TABLE blogs_readers (
+    r_id INT,
+    b_id INT,
+    CONSTRAINT TABLE_3_BLOGS_FK FOREIGN KEY (b_id) REFERENCES blogs(id),
+    CONSTRAINT TABLE_3_READERS_FK FOREIGN KEY (r_id) REFERENCES readers(id)
+);
+
+-- TABLA INDEPENDIENTE PARA MEJOR MANEJO DEL LOGIN Y REGISTRO
+CREATE TABLE login(
+	id INT AUTO_INCREMENT,
+    usuario VARCHAR(15),
+    pw VARCHAR(500),
+    PRIMARY KEY LOGIN_PK(id)
+);

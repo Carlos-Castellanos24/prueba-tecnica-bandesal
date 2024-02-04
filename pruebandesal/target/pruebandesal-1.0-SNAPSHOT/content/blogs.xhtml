@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      >
+    <h:head>
+        <title>Blogs</title>
+    </h:head>
+    <h:body>
+        <ui:composition template="/template/template.xhtml">   
+            <ui:define name="content">
+                <!-- BLOGS FORM -->
+                <h:form id="blogsForm">
+                    <p:growl id="growl" showDetail="true" sticky="true" life="300" globalOnly="true"/>
+                    <p:dataTable id="blogsDataTable" 
+                                 value="#{blogController.blogs}" 
+                                 var="b" selection="#{blogController.blogSeleccionado}" rowKey="#{b.id}" 
+                                 selectionMode="single"
+                                 paginator="true" rows="10" paginatorPosition="bottom">
+                        <p:column headerText="ID"
+                                  filterBy="#{b.id}"
+                                  sortBy="#{b.id}">
+                            #{b.id}
+                        </p:column>
+                        <p:column headerText="Titulo"
+                                  filterBy="#{b.title}">
+                            #{b.title}
+                        </p:column>
+                        <p:column headerText="Descripcion"
+                                  filterBy="#{b.description}">
+                            #{b.description}
+                        </p:column>
+                        <f:facet name="header">
+                            <p:commandButton value="Agregar Blog" 
+                                             update=":dialogFormBlog" oncomplete="PF('blogDialog').show()" />
+                        </f:facet>
+                    </p:dataTable>
+
+                    <!-- CONTEXT MENU BLOGS -->
+                    <p:contextMenu for="blogsDataTable">
+                        <p:menuitem value="Eliminar" icon="pi pi-times" update="blogsDataTable,growlForm" actionListener="#{blogController.eliminarBlog}"/>
+                        <p:menuitem value="Editar" icon="pi pi-pencil" update="dialogFormUpdateBlog" oncomplete="PF('blogUpdateDialog').show()" actionListener="#{blogController.datosBlogUpdate}"/>
+                    </p:contextMenu>
+                </h:form>
+
+                <!-- BLOGS DIALOG -->
+                <p:dialog id="blogDlg" widgetVar="blogDialog" header="Agregar Blog" modal="true" showEffect="fade" hideEffect="fade" 
+                          resizable="false" >
+                    <h:form id="dialogFormBlog">
+                        <h:panelGrid id="display" columns="4" cellpadding="5"> 
+                            <p:outputLabel for="title" value="Titulo" />
+                            <p:inputText id="title" value="#{blogController.blog.title}" required="true" requiredMessage="El titulo es requerido"/>
+                            <p:outputLabel for="description" value="Descripcion" />
+                            <p:inputText id="description" value="#{blogController.blog.description}" required="true" requiredMessage="La descripcion es requerida" />
+                            <p:commandButton value="Agregar" oncomplete="if (!args.validationFailed) PF('blogDialog').hide();" 
+                                             actionListener="#{blogController.agregarBlog}"
+                                             process="@form"
+                                             update="display,:blogsForm:blogsDataTable,growlForm"/>
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+
+                <!-- BLOG UPDATE DIALOG -->
+                <p:dialog id="blogUpdateDlg" widgetVar="blogUpdateDialog" header="Editar Blog" modal="true" showEffect="fade" hideEffect="fade" 
+                          resizable="false" >
+                    <h:form id="dialogFormUpdateBlog">
+                        <h:panelGrid id="display" columns="4" cellpadding="5">
+                            <p:outputLabel for="titleUpd" value="Titulo" />
+                            <p:inputText id="titleUpd" value="#{blogController.blogEdit.title}" required="true" requiredMessage="El titulo es requerido"/>
+                            <p:outputLabel for="descriptionUpd" value="Descripcion" />
+                            <p:inputText id="descriptionUpd" value="#{blogController.blogEdit.description}" required="true" requiredMessage="La descripcion es requerida"/>
+                            <p:commandButton value="Editar" oncomplete="if (!args.validationFailed) PF('blogUpdateDialog').hide();" 
+                                             actionListener="#{blogController.editarBlog}"
+                                             process="@form"
+                                             update="display,:blogsForm:blogsDataTable,growlForm"/>
+                        </h:panelGrid>
+                    </h:form>
+                </p:dialog>
+            </ui:define>          
+        </ui:composition>
+    </h:body>
+</html>
+
